@@ -1,0 +1,1 @@
+# CareerProfile request/response schemas.

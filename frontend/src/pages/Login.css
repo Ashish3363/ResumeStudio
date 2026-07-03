@@ -1,0 +1,452 @@
+/* ============================================================
+   Login — Obsidian Cyber-Premium
+   Faithful reproduction of the TailorFlow AI / CareerPro AI login.
+   ============================================================ */
+
+.login {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------
+   Left: Marketing & Illustration
+   --------------------------------------------------------------- */
+.login__marketing {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  padding: 40px;
+  overflow: hidden;
+  background: var(--surface-container-lowest);
+  border-right: 1px solid var(--outline-variant);
+}
+
+/* Atmospheric gradient orbs */
+.login__orb {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 9999px;
+  filter: blur(120px);
+  pointer-events: none;
+}
+
+.login__orb--top {
+  top: -96px;
+  left: -96px;
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.login__orb--bottom {
+  bottom: -96px;
+  right: -96px;
+  background: rgba(88, 28, 135, 0.3);
+}
+
+.login__brand {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 40px;
+}
+
+.login__brand-name {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+}
+
+.login__marketing-body {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.login__headline {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 3rem;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0 0 16px;
+}
+
+.login__lede {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--on-surface-variant);
+  margin: 0 0 40px;
+}
+
+/* Feature list */
+.login__features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login__feature {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.login__feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 0.75rem;
+  color: var(--primary);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login__feature:hover .login__feature-icon {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+}
+
+.login__feature-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--on-surface);
+}
+
+/* Illustration */
+.login__illustration {
+  position: relative;
+  margin-top: 40px;
+}
+
+.login__illustration-glow {
+  position: absolute;
+  inset: 0;
+  background: rgba(139, 92, 246, 0.2);
+  filter: blur(60px);
+  border-radius: 9999px;
+}
+
+.login__illustration-frame {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(82, 82, 91, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  transform: rotate(2deg);
+  transition: transform 0.5s ease;
+}
+
+.login__illustration-frame:hover {
+  transform: rotate(0deg);
+}
+
+.login__illustration-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  background: var(--surface-container-low);
+}
+
+.login__illustration-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.9;
+  mix-blend-mode: screen;
+}
+
+.login__marketing-footer {
+  position: relative;
+  z-index: 10;
+  margin-top: auto;
+  opacity: 0.5;
+  font-family: "Geist", sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--on-surface);
+}
+
+/* ---------------------------------------------------------------
+   Right: Login card
+   --------------------------------------------------------------- */
+.login__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 16px;
+  background: var(--surface);
+}
+
+.login__panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at top right,
+    rgba(139, 92, 246, 0.05),
+    var(--surface) 55%
+  );
+}
+
+.login__card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 480px;
+  padding: 48px;
+  border-radius: 1.5rem;
+  background: rgba(28, 27, 28, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+.login__card-header {
+  margin-bottom: 32px;
+}
+
+.login__title {
+  font-family: "Bricolage Grotesque", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0 0 8px;
+}
+
+.login__subtitle {
+  font-size: 1rem;
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.login__label {
+  font-family: "Geist", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  margin-left: 4px;
+  transition: color 0.2s ease;
+}
+
+.login__label--focused {
+  color: var(--primary);
+}
+
+.login__forgot {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.login__forgot:hover {
+  color: var(--primary-container);
+}
+
+.login__input {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  color: var(--on-surface);
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: 0.75rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login__input::placeholder {
+  color: var(--outline);
+}
+
+.login__input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+}
+
+.login__submit-wrap {
+  padding-top: 8px;
+}
+
+.login__submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  transition: filter 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.login__submit:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.4);
+}
+
+.login__submit:active {
+  transform: scale(0.98);
+}
+
+.login__submit .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* Divider */
+.login__divider {
+  display: flex;
+  align-items: center;
+  padding: 32px 0;
+}
+
+.login__divider::before,
+.login__divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--outline-variant);
+}
+
+.login__divider span {
+  margin: 0 16px;
+  font-family: "Geist", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--outline);
+}
+
+/* Social login */
+.login__social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--on-surface);
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.login__social:hover {
+  background: var(--surface-bright);
+}
+
+.login__social:active {
+  transform: scale(0.98);
+}
+
+.login__social svg {
+  width: 20px;
+  height: 20px;
+}
+
+.login__signup {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+}
+
+.login__signup a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.login__signup a:hover {
+  color: var(--primary-container);
+}
+
+/* Mobile brand shown only on small screens */
+.login__mobile-brand {
+  display: none;
+}
+
+/* ---------------------------------------------------------------
+   Responsive: collapse to single column below lg (1024px)
+   --------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .login__marketing {
+    display: none;
+  }
+
+  .login__panel {
+    width: 100%;
+  }
+
+  .login__mobile-brand {
+    display: block;
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    z-index: 20;
+  }
+
+  .login__card {
+    padding: 32px;
+  }
+}

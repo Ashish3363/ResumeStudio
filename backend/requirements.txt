@@ -1,0 +1,3 @@
+# fastapi uvicorn sqlalchemy alembic pydantic pydantic-settings psycopg[binary] python-jose passlib bcrypt google-generativeai pdfplumber python-docx jinja2  (TODO: pin versions)
+
+/alembic
