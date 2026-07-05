@@ -14,7 +14,7 @@ Build **bottom-up, then in vertical slices**:
 A "vertical slice" means: finish one feature end-to-end (request → logic → response) so you
 always have a working app, instead of half-building ten files at once.
 
-Legend: ✅ = already exists · ▶ = you write it.
+Legend: ✅ = **completed** · ▶ = still to write (stub/empty).
 
 ---
 
@@ -22,11 +22,11 @@ Legend: ✅ = already exists · ▶ = you write it.
 
 | Order | File | Contains |
 |---|---|---|
-| 1 | ▶ `requirements.txt` | Pin the deps you'll import: `fastapi`, `uvicorn[standard]`, `sqlalchemy`, `alembic`, `pydantic`, `pydantic-settings`, `psycopg[binary]`, `python-jose[cryptography]`, `passlib[bcrypt]`, `google-generativeai`, `pdfplumber`, `python-docx`, `jinja2`. Then `pip install -r requirements.txt`. |
-| 2 | ▶ `app/config.py` | The typed `Settings` + `settings` singleton (env/`.env`). Holds `DATABASE_URL`, JWT settings, `GEMINI_API_KEY`, storage creds, `CORS_ORIGINS`, `SAVED_RESUME_CAP=10`. |
-| 3 | ▶ `app/models/base.py` | SQLAlchemy 2.0 declarative `Base` + shared mixins: UUIDv7 primary key, `created_at`/`updated_at`. Every model inherits from these. |
+| 1 | ✅ `requirements.txt` | Pin the deps you'll import: `fastapi`, `uvicorn[standard]`, `sqlalchemy`, `alembic`, `pydantic`, `pydantic-settings`, `psycopg[binary]`, `python-jose[cryptography]`, `passlib[bcrypt]`, `google-generativeai`, `pdfplumber`, `python-docx`, `jinja2`. Then `pip install -r requirements.txt`. |
+| 2 | ✅ `app/config.py` | The typed `Settings` + `settings` singleton (env/`.env`). Holds `DATABASE_URL`, JWT settings, `GEMINI_API_KEY`, storage creds, `CORS_ORIGINS`, `SAVED_RESUME_CAP=10`. |
+| 3 | ✅ `app/models/base.py` | SQLAlchemy 2.0 declarative `Base` + shared mixins: UUIDv7 primary key, `created_at`/`updated_at`. Every model inherits from these. |
 | 4 | ▶ `app/database.py` | The engine (from `settings.DATABASE_URL`), `SessionLocal`, and the `get_db()` FastAPI dependency that yields a session and closes it. |
-| 5 | ▶ `app/main.py` | Composition root: create `FastAPI`, add CORS from settings, `lifespan`, `/health`. Routers stay commented until their modules exist. |
+| 5 | ✅ `app/main.py` | Composition root: create `FastAPI`, add CORS from settings, `lifespan`, `/health`. Routers stay commented until their modules exist. |
 
 **Checkpoint:** `uvicorn app.main:app --reload` boots and `GET /health` → `{"status":"ok"}`.
 
@@ -38,16 +38,16 @@ Build all four, then generate the first migration. They depend on `models/base.p
 
 | Order | File | Contains |
 |---|---|---|
-| 6 | ▶ `app/models/user.py` | `User`: email (unique), `password_hash`, `is_email_verified`, `profile_picture`, `token_version`, `plan`, timestamps. |
-| 7 | ▶ `app/models/career_profile.py` | `CareerProfile`: `user_id` (unique → 1:1), `title`, `profile_json` (JSONB). FK cascade from user. |
-| 8 | ▶ `app/models/job_description.py` | `JobDescription`: `user_id`, `company_name`, `job_title`, `jd_text`, `parsed_jd_json` (JSONB). |
-| 9 | ▶ `app/models/resume.py` | `Resume`: `user_id`, `job_description_id` (nullable FK), `resume_name`, `resume_json`, `changes_summary`, `pdf_url`, `ats_score`, `overall_match_score`, `match_report`, timestamps. |
-| 10 | ▶ `app/models/__init__.py` | Import all models here so Alembic/`Base.metadata` can see them. |
+| 6 | ✅ `app/models/user.py` | `User`: email (unique), `password_hash`, `is_email_verified`, `profile_picture`, `token_version`, `plan`, timestamps. |
+| 7 | ✅ `app/models/career_profile.py` | `CareerProfile`: `user_id` (unique → 1:1), `title`, `profile_json` (JSONB). FK cascade from user. |
+| 8 | ✅ `app/models/job_description.py` | `JobDescription`: `user_id`, `company_name`, `job_title`, `jd_text`, `parsed_jd_json` (JSONB). |
+| 9 | ✅ `app/models/resume.py` | `Resume`: `user_id`, `job_description_id` (nullable FK), `resume_name`, `resume_json`, `changes_summary`, `pdf_url`, `ats_score`, `overall_match_score`, `match_report`, timestamps. |
+| 10 | ✅ `app/models/__init__.py` | Import all models here so Alembic/`Base.metadata` can see them. |
 
 **Then set up migrations:**
 | Order | File | Contains |
 |---|---|---|
-| 11 | ▶ `alembic.ini` + `alembic/env.py` | Point Alembic at `settings.DATABASE_URL` and `Base.metadata` (import from `app.models`). |
+| 11 | ✅ `alembic.ini` + `alembic/env.py` | Point Alembic at `settings.DATABASE_URL` and `Base.metadata` (import from `app.models`). |
 | 12 | — | Run `alembic revision --autogenerate -m "initial schema"` then `alembic upgrade head`. |
 
 **Checkpoint:** the 4 tables exist in your Neon/local DB (inspect with any SQL client).
@@ -197,7 +197,7 @@ Needed before "save with PDF" works.
 |---|---|---|
 | 45 | ▶ `tests/conftest.py` | Fixtures: test DB session, `TestClient`, an authed-user helper. |
 | 46 | ▶ `tests/…` | One test per slice checkpoint above. |
-| 47 | ▶ `Dockerfile` · `docker-compose.yml` | Python base + Tectonic; dev stack. Do last, once the app runs locally. |
+| 47 | ✅ `Dockerfile` · `docker-compose.yml` | Python base + Tectonic; dev stack. Do last, once the app runs locally. **Note:** `Dockerfile` done (multi-stage base→builder→dev/prod, pinned Tectonic); `docker-compose.yml` + `docker-compose.override.yml` now live at the **repo root**, not `backend/`. |
 
 **Final checkpoint (end-to-end):** register → build profile → analyze JD → match → verify skills →
 generate → save → edit → download. See `documentation/README.md` for the full feature specs.

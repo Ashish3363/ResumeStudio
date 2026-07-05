@@ -1,15 +1,18 @@
-# users table ORM model (auth, plan, token_version).
+# users + career_profiles table ORM models
+#   User          — auth, plan, token_version
+#   CareerProfile — 1:1 with user; profile_json master truth pool
 
 from __future__ import annotations
-from sqlalchemy import Boolean, Integer, String, text
+
+import uuid
+
+from sqlalchemy import Boolean, ForeignKey, Integer, String, text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import TYPE_CHECKING
 
-from app.models.base import Base, TimestampMixin, UUIDMixin
+from app.database import Base, TimestampMixin, UUIDMixin
 
-if TYPE_CHECKING:
-    from app.models.career_profile import CareerProfile
-    
+
 class User(Base, UUIDMixin, TimestampMixin):
     __tablename__ = "users"
 
@@ -26,9 +29,24 @@ class User(Base, UUIDMixin, TimestampMixin):
     plan: Mapped[str] = mapped_column(
         String(20), default="free", server_default=text("'free'"), nullable=False,
     )
-    career_profile: Mapped["CareerProfile | None"]= relationship(
+    career_profile: Mapped["CareerProfile | None"] = relationship(
         back_populates="user",
         uselist=False,                       # 1:1 → single object, not a list
         cascade="all, delete-orphan",        # ORM-side cascade to match the DB
         passive_deletes=True,                # let the DB's ON DELETE CASCADE do the work
     )
+
+
+class CareerProfile(Base, UUIDMixin, TimestampMixin):
+    __tablename__ = "career_profiles"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        unique=True,          # UNIQUE → enforces 1:1 with users
+        index=True,
+        nullable=False,
+    )
+    title: Mapped[str | None] = mapped_column(String(255))
+    profile_json: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+
+    user: Mapped["User"] = relationship(back_populates="career_profile")

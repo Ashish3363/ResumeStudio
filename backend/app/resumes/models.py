@@ -9,11 +9,11 @@ from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, TimestampMixin, UUIDMixin
+from app.database import Base, TimestampMixin, UUIDMixin
 
 if TYPE_CHECKING:
-    from app.models.job_description import JobDescription
-    from app.models.user import User
+    from app.jd.models import JobDescription
+    from app.users.models import User
 
 
 class Resume(Base, UUIDMixin, TimestampMixin):

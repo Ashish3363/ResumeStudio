@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: resumeStudio
+    ports:
+      - "5432:5432"            # exposed so host tools (psql/DBeaver) can connect
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d resumeStudio"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      target: dev            # override prod -> dev (hot reload, no baked source)
+    environment:
+      # Overrides the .env value; inside the network the DB host is "db", not localhost.
+      # Also switches the driver to psycopg (sync) to match requirements.txt.
+      DATABASE_URL: postgresql+psycopg://postgres:root@db:5432/resumeStudio
+      WATCHFILES_FORCE_POLLING: "true"   # Windows->Linux bind mount: reload won't fire without polling
+    volumes:
+      - ./backend:/app       # bind-mount source for --reload
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

@@ -15,6 +15,9 @@ repo root holds the condensed decision record.
 - [AI Provider Abstraction](./04-ai-provider.md) — provider-agnostic AI layer
 - [Deployment](./05-deployment.md) — Render, Neon, Vercel, storage
 
+## Infrastructure
+- [Backend Dockerfile](./06-docker-backend.md) — multi-stage image + Tectonic, build first
+
 ## Features
 - [Authentication](./features/authentication.md)
 - [Resume Input](./features/resume-input.md) — manual entry + upload/parsing

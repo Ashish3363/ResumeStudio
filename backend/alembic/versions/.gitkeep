@@ -1,6 +1,6 @@
 
 from app.config import settings
-from app.models import Base   # importing the package registers all 4 models on Base.metadata
+from app.models_registry import Base   # importing the registry registers all 4 models on Base.metadata
 
 # Feed the DB URL from our settings instead of hardcoding it in alembic.ini
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)

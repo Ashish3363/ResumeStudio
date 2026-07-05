@@ -10,7 +10,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore", #ignore unrelated env vars instead of erroring
     )
-    
+
     # --- app ---
     APP_ENV: str = "dev"          # dev | prod
     DEBUG: bool = True

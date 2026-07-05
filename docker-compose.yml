@@ -1,0 +1,17 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      target: prod
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    healthcheck:
+      # NOTE: prod image has no curl (removed for size) — use python, which is present.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped

@@ -2,8 +2,9 @@
 
 Wires Alembic to the app's settings (DB URL) and models (metadata):
   - the database URL comes from app.config.settings (kept out of alembic.ini),
-  - importing app.models registers all four tables on Base.metadata, which is
-    what `--autogenerate` diffs the live database against.
+  - Base lives in app.database; importing app.models_registry pulls in every
+    feature's models, registering all tables on Base.metadata, which is what
+    `--autogenerate` diffs against.
 """
 
 from logging.config import fileConfig
@@ -12,7 +13,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.config import settings
-from app.models import Base  # noqa: F401  (import registers all models on Base.metadata)
+from app.models_registry import Base  # importing the registry registers every model on Base.metadata
 
 # Alembic Config object — provides access to values in alembic.ini.
 config = context.config
