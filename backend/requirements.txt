@@ -1,3 +1,31 @@
-# fastapi uvicorn sqlalchemy alembic pydantic pydantic-settings psycopg[binary] python-jose passlib bcrypt google-generativeai pdfplumber python-docx jinja2  (TODO: pin versions)
+# Web framework
+fastapi
+uvicorn[standard]
 
-/alembic
+# Database / ORM / migrations
+sqlalchemy
+alembic
+psycopg[binary]
+
+# Settings & validation
+pydantic
+pydantic-settings
+
+# IDs
+uuid6
+
+# Auth
+python-jose[cryptography]
+passlib[bcrypt]
+
+# AI
+google-generativeai
+
+# Resume parsing
+pdfplumber
+python-docx
+
+# Templating (LaTeX generation)
+jinja2
+
+# (TODO: pin versions before deploy, e.g. fastapi==0.115.x)

@@ -20,7 +20,7 @@ app=FastAPI(
     lifespan=lifespan,
 )
     
-app.middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS, #eg-["http://localhost:5173", "https://yourapp.vercel.app"]
     allow_credentials=True,

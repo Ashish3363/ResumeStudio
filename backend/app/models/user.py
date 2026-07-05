@@ -1,8 +1,8 @@
 # users table ORM model (auth, plan, token_version).
 
-from sqlalchemy import Boolean, Integer, String, text
-from sqlalchemy.orm import Mapped, mapped_column
 from __future__ import annotations
+from sqlalchemy import Boolean, Integer, String, text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import TYPE_CHECKING
 
 from app.models.base import Base, TimestampMixin, UUIDMixin
@@ -30,6 +30,5 @@ class User(Base, UUIDMixin, TimestampMixin):
         back_populates="user",
         uselist=False,                       # 1:1 → single object, not a list
         cascade="all, delete-orphan",        # ORM-side cascade to match the DB
-        passive_deletes=True,                # let the DB's ON DELETE CASCADE do the work 
+        passive_deletes=True,                # let the DB's ON DELETE CASCADE do the work
     )
-    # Relationships are added once the other models exist (Phase note below).

@@ -1,10 +1,10 @@
 # Declarative Base + shared mixins (UUIDv7 pk, created_at/updated_at).
-import uuid 
+import uuid
 from datetime import datetime
 
 from sqlalchemy import DateTime, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from uuid import uuid7 
+from uuid6 import uuid7
 
 class Base(DeclarativeBase):
     """ All ORM models inherits from this. `Base.metadata` is what Alembic reads."""
