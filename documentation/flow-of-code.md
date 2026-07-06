@@ -25,7 +25,7 @@ Legend: ✅ = **completed** · ▶ = still to write (stub/empty).
 | 1 | ✅ `requirements.txt` | Pin the deps you'll import: `fastapi`, `uvicorn[standard]`, `sqlalchemy`, `alembic`, `pydantic`, `pydantic-settings`, `psycopg[binary]`, `python-jose[cryptography]`, `passlib[bcrypt]`, `google-generativeai`, `pdfplumber`, `python-docx`, `jinja2`. Then `pip install -r requirements.txt`. |
 | 2 | ✅ `app/config.py` | The typed `Settings` + `settings` singleton (env/`.env`). Holds `DATABASE_URL`, JWT settings, `GEMINI_API_KEY`, storage creds, `CORS_ORIGINS`, `SAVED_RESUME_CAP=10`. |
 | 3 | ✅ `app/models/base.py` | SQLAlchemy 2.0 declarative `Base` + shared mixins: UUIDv7 primary key, `created_at`/`updated_at`. Every model inherits from these. |
-| 4 | ▶ `app/database.py` | The engine (from `settings.DATABASE_URL`), `SessionLocal`, and the `get_db()` FastAPI dependency that yields a session and closes it. |
+| 4 | ✅ `app/database.py` | The engine (from `settings.DATABASE_URL`), `SessionLocal`, and the `get_db()` FastAPI dependency that yields a session and closes it. Also holds `Base` + mixins and the `SessionDep` alias. |
 | 5 | ✅ `app/main.py` | Composition root: create `FastAPI`, add CORS from settings, `lifespan`, `/health`. Routers stay commented until their modules exist. |
 
 **Checkpoint:** `uvicorn app.main:app --reload` boots and `GET /health` → `{"status":"ok"}`.
@@ -48,7 +48,7 @@ Build all four, then generate the first migration. They depend on `models/base.p
 | Order | File | Contains |
 |---|---|---|
 | 11 | ✅ `alembic.ini` + `alembic/env.py` | Point Alembic at `settings.DATABASE_URL` and `Base.metadata` (import from `app.models`). |
-| 12 | — | Run `alembic revision --autogenerate -m "initial schema"` then `alembic upgrade head`. |
+| 12 | ✅ | Ran `alembic revision --autogenerate -m "initial schema"` → `alembic upgrade head`. All 4 tables + indexes created in local Postgres (`resumeStudio`). Revision `a1a4e9cac145`. |
 
 **Checkpoint:** the 4 tables exist in your Neon/local DB (inspect with any SQL client).
 
@@ -63,7 +63,7 @@ Pure Pydantic; no DB, no logic. These are the request/response and AI-output sha
 | — | ✅ `app/schemas/resume.py` | `ResumeData` + sub-models (skills with `verified`/`level`, experience, etc.). |
 | — | ✅ `app/schemas/jd.py` | `JDAnalysis`. |
 | 13 | ▶ `app/schemas/matching.py` | `MatchReport`, `MissingSkill`, `SkillVerification`, `VerificationChoice`. |
-| 14 | ▶ `app/schemas/auth.py` | Register/login request bodies; token response (`access_token`, `token_type`). |
+| 14 | ✅ `app/auth/schemas.py` | Register/login/refresh request bodies; `TokenResponse` (`access_token`, `refresh_token`, `token_type`); `UserOut`. *(Refactor: lives in the auth feature folder, not `app/schemas/`.)* |
 | 15 | ▶ `app/schemas/profile.py` | Career-profile request/response wrappers around `ResumeData`. |
 
 **Checkpoint:** `python -c "from app.schemas.matching import MatchReport"` imports cleanly.
@@ -72,11 +72,15 @@ Pure Pydantic; no DB, no logic. These are the request/response and AI-output sha
 
 ## Phase 3 — Core security (shared by every protected route)
 
+> **Refactor note:** the codebase moved to a domain-driven layout. `core/` no longer
+> exists — security is top-level `app/security.py`, exceptions live in `app/shared/`,
+> and `get_current_user` lives in the auth feature (`app/auth/dependencies.py`).
+
 | Order | File | Contains |
 |---|---|---|
-| 16 | ▶ `app/core/security.py` | Password hash/verify (passlib); JWT create/decode (python-jose); embed `token_version` in the refresh token. |
-| 17 | ▶ `app/core/exceptions.py` | App exception types + FastAPI handlers (e.g. 401, 404, quota errors). |
-| 18 | ▶ `app/core/deps.py` | `get_current_user()` dependency: read the bearer token, verify it, load the `User` via `get_db`. Depends on security + database + models. |
+| 16 | ✅ `app/security.py` | Password hash/verify (**`bcrypt` directly** — passlib dropped, it breaks on bcrypt≥4.1); JWT create/decode (python-jose); embeds `token_version` (`ver`) in **both** access and refresh tokens. |
+| 17 | ✅ `app/shared/exceptions.py` | `AppError` hierarchy (`InvalidCredentials`/`InvalidToken`/`EmailAlreadyExists`/`NotFoundError`) + `register_exception_handlers(app)`. |
+| 18 | ✅ `app/auth/dependencies.py` | `get_current_user()` dependency: read the bearer token, verify type + `ver` (revocation), load the `User` via `get_db`. Exposes the `CurrentUser` alias. |
 
 **Checkpoint:** unit-test `hash → verify` and `create token → decode token` round-trips.
 
@@ -88,9 +92,9 @@ Do this before other features — everything else needs `get_current_user`.
 
 | Order | File | Contains |
 |---|---|---|
-| 19 | ▶ `app/auth/service.py` | Logic: create user (hash password), authenticate, issue access+refresh, refresh via `token_version`, logout (bump `token_version`). |
-| 20 | ▶ `app/auth/router.py` | `router = APIRouter()` with `POST /register`, `/login`, `/refresh`, `/logout`. Calls the service. |
-| 21 | ▶ `app/main.py` (edit) | Uncomment + `include_router(auth_router, prefix="/api/auth")`. |
+| 19 | ✅ `app/auth/service.py` + `app/auth/repository.py` | Service = logic: create user (hash password), authenticate, issue access+refresh, refresh via `token_version`, logout (bump `token_version`); owns the transaction. Repository = the user DB queries (added in the refactor; service never writes SQL directly). |
+| 20 | ✅ `app/auth/router.py` | `router = APIRouter()` with `POST /register`, `/login`, `/refresh`, `/logout`, plus `GET /me`. Thin wrappers over the service. |
+| 21 | ✅ `app/main.py` (edit) | `include_router(auth_router, prefix="/api/auth")` **and** `register_exception_handlers(app)` (so auth errors return 401/409, not 500). |
 
 **Checkpoint:** register → login → call a protected test route → refresh → logout invalidates old refresh.
 
@@ -193,10 +197,14 @@ Needed before "save with PDF" works.
 
 ## Phase 13 — Tests & packaging
 
+> **Testing approach (chosen):** E2E API tests via **Playwright** (`request` fixture, no browser),
+> not pytest/`TestClient`. Suite lives in `backend/e2e/` and drives real HTTP against a uvicorn
+> server Playwright starts against an isolated `resumeStudio_test` DB. See `backend/e2e/README.md`.
+
 | Order | File | Contains |
 |---|---|---|
-| 45 | ▶ `tests/conftest.py` | Fixtures: test DB session, `TestClient`, an authed-user helper. |
-| 46 | ▶ `tests/…` | One test per slice checkpoint above. |
+| 45 | ✅ `backend/e2e/` (Playwright) | `playwright.config.ts` (webServer→uvicorn on test DB) + `global-setup.ts` + `scripts/init_test_db.py` (creates/resets `resumeStudio_test`). Replaces the pytest `conftest.py` plan. |
+| 46 | ✅ `backend/e2e/tests/auth.spec.ts` | **12 auth API tests, all passing:** register (safe view / no secrets), duplicate→409, short-pw→422, login pair, wrong-pw/unknown-email→401, `/me` no-token/valid/garbage, refresh, access-as-refresh→401, logout revocation. |
 | 47 | ✅ `Dockerfile` · `docker-compose.yml` | Python base + Tectonic; dev stack. Do last, once the app runs locally. **Note:** `Dockerfile` done (multi-stage base→builder→dev/prod, pinned Tectonic); `docker-compose.yml` + `docker-compose.override.yml` now live at the **repo root**, not `backend/`. |
 
 **Final checkpoint (end-to-end):** register → build profile → analyze JD → match → verify skills →

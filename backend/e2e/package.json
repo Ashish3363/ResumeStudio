@@ -1,0 +1,12 @@
+{
+  "name": "resumestudio-e2e",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Playwright API tests for the ResumeStudio backend",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  }
+}

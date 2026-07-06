@@ -16,7 +16,8 @@ uuid6
 
 # Auth
 python-jose[cryptography]
-passlib[bcrypt]
+bcrypt  # used directly (passlib is unmaintained + breaks on bcrypt>=4.1)
+email-validator  # required by pydantic EmailStr
 
 # AI
 google-generativeai
